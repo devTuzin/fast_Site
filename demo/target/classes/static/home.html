@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<!-- TELA 2: ABRE QUANDO O LOGIN ESTÁ CERTO (endereço: /home.html) -->
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Página inicial</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        html, body { height: 100%; }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Open Sans", Arial, sans-serif;
+            font-size: 14px;
+            color: #000;
+            background: linear-gradient(90deg, #a9a9a9 0%, #d2d2d2 40%, #ffffff 100%);
+        }
+
+        /* A página fica escondida até o Java confirmar que há login */
+        body.oculto { display: none; }
+
+        header {
+            height: 48px;
+            padding: 0 12px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background: linear-gradient(90deg, #0d0d0d 0%, #8a8a8a 50%, #ffffff 100%);
+        }
+
+        #btnSair {
+            width: 88px;
+            height: 31px;
+            border: none;
+            border-radius: 16px;
+            background: #9b9b9b;
+            color: #000;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        #btnSair:hover { background: #8a8a8a; }
+
+        main {
+            display: flex;
+            justify-content: center;
+            padding: 110px 16px 0;
+        }
+
+        .cartao {
+            width: 380px;
+            max-width: 100%;
+            height: 152px;
+            border-radius: 28px;
+            background: #b3b3b3;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 32px;
+            text-align: center;
+        }
+
+        .cartao p { margin: 0; }
+    </style>
+</head>
+<body class="oculto">
+    <header>
+        <button id="btnSair">Sair</button>
+    </header>
+
+    <main>
+        <div class="cartao">
+            <p>Login Realizado!</p>
+            <p>Bem Vindo: <span id="emailLogado"></span></p>
+        </div>
+    </main>
+
+    <script>
+        // Ao abrir a página, pergunta ao Java quem está logado
+        async function verificarLogin() {
+            const resposta = await fetch("/usuario");
+
+            if (!resposta.ok) {
+                // Ninguém logado: volta para a tela de login
+                window.location.href = "/criptografia.html";
+                return;
+            }
+
+            // Logado: mostra o email e exibe a página
+            document.getElementById("emailLogado").textContent = await resposta.text();
+            document.body.classList.remove("oculto");
+        }
+
+        // Botão Sair: apaga a sessão e volta para o login
+        document.getElementById("btnSair").addEventListener("click", async () => {
+            await fetch("/logout", { method: "POST" });
+            window.location.href = "/criptografia.html";
+        });
+
+        verificarLogin();
+    </script>
+</body>
+</html>
